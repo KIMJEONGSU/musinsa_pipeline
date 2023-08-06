@@ -1,7 +1,7 @@
 # 해당파일은 mongoDB에서 직접 가져와서 전처리를 하면 과부하때문에 파일로 저장하기 위한 파일.
 import re
 from tqdm import tqdm
-from about_DB.naver_data import MongoDBClient
+from db_info_load import MongoDBClient
 from sklearn.model_selection import train_test_split
 from konlpy.tag import Okt
 import pandas as pd

@@ -1,9 +1,12 @@
 # 해당파일은 무신사 리뷰홈페이지에서 크롤링한 후 몽고디비에 바로 적재하도록하는 코드
 import requests
 from bs4 import BeautifulSoup
-from naver_predictdata_load import MongoDBClient
+from db_info_load import MongoDBClient
 import re
 import time
+import schedule
+import datetime
+
 
 class MusinsaDataLoader():
     def __init__(self, month, day, collection_name):
@@ -11,16 +14,18 @@ class MusinsaDataLoader():
         self.day = day
         self.client = MongoDBClient()
         self.database = self.client.get_database(collection_name)
+        print(f'현재 스크래핑 진행중인 날짜:{self.month}/{self.day}')
 
-    def load_data(self):
-        t_list = self.crawling()
+    def load_data(self, start, end):
+        t_list = self.crawling(start, end)
         time.sleep(2)
         self.database.insert_many(t_list)
 
-    def crawling(self):
+    def crawling(self,start, end):
         title_list=[]
         try:
-            for num in range(151,200):
+            for num in range(start,end):
+                start0 = time.time()
                 time.sleep(2)
                 url = f'https://www.musinsa.com/goods/reviews/lists?type=style&searchYear=2022&searchMonth={self.month}&searchDay={self.day}&maxRt=2023&minRt=2009&brand=&page={num}&sort=new&hashId=&bestType=&s_type=all&searchKeyword='
                 req = requests.get(url)
@@ -54,31 +59,43 @@ class MusinsaDataLoader():
                         starss =  stars.replace('100','5').replace('80','4').replace('60','3').replace('40','2').replace('20','1')
                         review_i = f.select_one('div.review-contents__text').text
                         review = re.sub("[^가-힣 ]","",review_i)
-                        link_i = f.select_one('a.review-goods-information__name').attrs['href']
-                        link = re.sub("[^/0-9]+/","",link_i)
 
                         musinsa1={'user_level': user_level, 'user_name': user_name,'user_sex': user_sex,
                                 'user_height': user_height,'user_weight': user_weight,'brand': brand,
                                 'product': product,'date': date,'starss': starss,
-                                'review': review,'link': link}
+                                'review': review}
                         title_list.append(musinsa1)
                 except :
                     musinsa1={'user_level': None, 'user_name': None,'user_sex': user_sex,
                                 'user_height': user_height,'user_weight': user_weight,'brand': brand,
                                 'product': product,'date': date,'starss': starss,
-                                'review': review,'link': link}
+                                'review': review}
                     title_list.append(musinsa1)
+                end0 = time.time()
+                print(f"페이지수:{num} / 실행시간 : {end0 - start0:.5f} sec") # 실행 시간 출력
 
         except Exception as e:
             print(f"Error occurred: {e}")
             pass
         return title_list
+    
+def load_data_and_schedule(start, end):
+    for i in range(1, 13): # 1월부터 12월 크롤링
+        Musinsa = MusinsaDataLoader(i, 2, 'musinsa_data') # 2번째 인자값은 day
+        time.sleep(10)
+        Musinsa.load_data(start, end)  # 크롤링할 페이지 입력
         
 if __name__ == '__main__':
-    for i in range(1,13):
-        Musinsa = MusinsaDataLoader(i,2,'musinsa_data') #월, 일, 데이터베이스이름 입력
-        time.sleep(1800)
-        Musinsa.load_data()
+    now = datetime.datetime.now()
+    print("현재시간 :",now)
+    schedule.every(5).minutes.do(load_data_and_schedule(151, 153)) #월, 일, 데이터베이스이름 입력
+
+    # 스캐쥴 시작
+    while True:
+        schedule.run_pending()
+        time.sleep(10)
+        
+        
 
 # 2023.04.29 
 # 1/1/1~101,150

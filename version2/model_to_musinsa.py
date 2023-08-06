@@ -7,7 +7,7 @@ from konlpy.tag import Okt
 from tqdm import tqdm
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
-from about_DB.naver_data import NaverDataLoader
+from db_info_load import NaverDataLoader
 import pickle
 from scikeras.wrappers import KerasClassifier 
 
@@ -34,7 +34,7 @@ with open('version2/model/LSTM.pkl', 'rb') as f:
     musinsa_nlp['predict_result'] = musinsa_nlp['review'].apply(lambda x: sentiment_predict(str(x), model))
     musinsa_nlp['predict_result_persent'] = musinsa_nlp['predict_result'].apply(lambda x : float(re.sub(r'^([\d.]+).*\n*', r'\1', x)))
     musinsa_nlp['predict_result_review'] = musinsa_nlp['predict_result'].apply(lambda x : re.search(r'부정|긍정', x).group())
-    musinsa_nlp.to_csv('data/musinsa_model_predict.csv', index=False)
+    # musinsa_nlp.to_csv('data/musinsa_model_predict.csv', index=False)
     # mongo_store = NaverDataLoader('musinsa_predict')
     # documents = []
     # for row in tqdm(range(len(musinsa_nlp))):

@@ -6,6 +6,8 @@ import csv
 from pymongo import MongoClient
 from tqdm import tqdm
 import json
+import urllib.parse
+
 
 class MongoDBClient:
     def __init__(self):
@@ -14,6 +16,7 @@ class MongoDBClient:
         self.password = self._load_password()
         self.database_name = 'data'
         self.client = MongoClient(self._mongo_uri())
+        
 
     def _mongo_uri(self):
         return f"mongodb+srv://{self.user}:{self.password}@{self.host}/{self.database_name}?retryWrites=true&w=majority"
@@ -22,8 +25,9 @@ class MongoDBClient:
         return self.client[self.database_name][collection_name]
     
     def _load_password(self):
-        with open('password.json') as f:
+        with open('version2/password.json') as f:
             data = json.load(f)
+            print(data.get('password'))
             return data.get('password')
 
 class NaverDataLoader:
@@ -41,6 +45,7 @@ class NaverDataLoader:
     def load_data(self):
         self.database.drop()
 
+        # 예측 모델을 만들기 위한 데이터셋 적재.
         # with open('naver_shopping.txt', 'r', encoding='utf-8') as f:
         #     naver = csv.reader(f)
 
@@ -53,6 +58,8 @@ class NaverDataLoader:
         #         documents.append(raw)
         #     #bulk insert를 사용하여 대량 데이터 빠르게 삽입.
         #     self.database.insert_many(documents)
+
+        
         with open('version2/data/musinsa_model_predict.csv', 'r', encoding='utf-8') as f:
             musinsa = csv.reader(f)
             documents = []
@@ -71,6 +78,8 @@ class NaverDataLoader:
 
 
 if __name__ == '__main__':
+
+    # 예측 모델을 만들기 위한 데이터셋 적재.
     # loader = NaverDataLoader('naver_data','naver_shopping.txt')
     # loader.load_data()
     loader = NaverDataLoader('musinsa_predict','version2/data/musinsa_model_predict.csv')
