@@ -90,12 +90,12 @@ def model_LSTM(X_train, y_train, tokenizer):
                 optimizer='adam', 
                 metrics=['acc', AUC()])
 
-    history_lstm = model_lstm.fit(X_train, 
-                    y_train, 
-                    epochs=10, 
-                    callbacks=[es], 
-                    batch_size=64, 
-                    validation_split=0.2)
+    # history_lstm = model_lstm.fit(X_train, 
+    #                 y_train, 
+    #                 epochs=10, 
+    #                 callbacks=[es], 
+    #                 batch_size=64, 
+    #                 validation_split=0.2)
     return model_lstm
 
 # 모델학습 및 피클링
