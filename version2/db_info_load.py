@@ -17,7 +17,6 @@ class MongoDBClient:
         self.database_name = 'data'
         self.client = MongoClient(self._mongo_uri())
         
-
     def _mongo_uri(self):
         return f"mongodb+srv://{self.user}:{self.password}@{self.host}/{self.database_name}?retryWrites=true&w=majority"
 
@@ -43,23 +42,7 @@ class NaverDataLoader:
         collection.insert_many(documents)
         
     def load_data(self):
-        self.database.drop()
-
-        # 예측 모델을 만들기 위한 데이터셋 적재.
-        # with open('naver_shopping.txt', 'r', encoding='utf-8') as f:
-        #     naver = csv.reader(f)
-
-        #     documents = []
-        #     for row in tqdm(naver):
-        #         raw = {
-        #             'rating': int(row[0][0]),
-        #             'review': row[0][1:].strip(),
-        #         }
-        #         documents.append(raw)
-        #     #bulk insert를 사용하여 대량 데이터 빠르게 삽입.
-        #     self.database.insert_many(documents)
-
-        
+        self.database.drop()       
         with open('version2/data/musinsa_model_predict.csv', 'r', encoding='utf-8') as f:
             musinsa = csv.reader(f)
             documents = []
@@ -78,9 +61,5 @@ class NaverDataLoader:
 
 
 if __name__ == '__main__':
-
-    # 예측 모델을 만들기 위한 데이터셋 적재.
-    # loader = NaverDataLoader('naver_data','naver_shopping.txt')
-    # loader.load_data()
     loader = NaverDataLoader('musinsa_predict','version2/data/musinsa_model_predict.csv')
     loader.load_data()
