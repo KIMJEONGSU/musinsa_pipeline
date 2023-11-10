@@ -48,3 +48,13 @@
 
 </div>
 </details>
+
+
+### 파이프라인
+
+![Untitled (5)](https://github.com/KIMJEONGSU/musinsa_pipeline/assets/23291338/03d9b0c7-641b-43ac-8b67-01b5c3e2d9de)
+
+- `Docker` : MongoDB Atlas와 Metabase 간에 독립적인 환경이 생성되기 때문에 의존성이 줄어들고 서로의 환경에 영향을 미치지 않아 더 안정적이고 신뢰성있는 서비스 구축 가능.
+- `MongoDB`
+    - 리뷰 텍스트는 비정형 데이터이므로 다양한 유형의 데이터 저장이 가능한 MongoDB 선택.
+    - 수평 확장이 쉽고, 빠른 읽기/ 쓰기 처리를 지원하기 때문에 대용량 데이터를 처리하는데 유리함.
